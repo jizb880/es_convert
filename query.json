@@ -1,0 +1,27 @@
+GET /my_index/_search
+{
+  "from": 0,
+  "size": 10,
+  "query": {
+    "bool": {
+      "must": [
+        { "match": { "title": "elasticsearch" } },
+        { "range": { "created_at": { "gte": "2024-01-01", "lte": "2024-12-31" } } }
+      ],
+      "must_not": [
+        { "term": { "status": "deleted" } }
+      ],
+      "should": [
+        { "match": { "tags": "search" } }
+      ],
+      "filter": [
+        { "exists": { "field": "author" } }
+      ]
+    }
+  },
+  "sort": [
+    { "created_at": "desc" },
+    { "_score": "desc" }
+  ],
+  "_source": ["title", "author", "created_at", "tags"]
+}
