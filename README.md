@@ -1,45 +1,106 @@
 # ES Query to SQL Converter
 
-<details>
+<details open>
 <summary><b>English</b></summary>
 
-A Python tool that converts Elasticsearch query DSL into standard SQL statements.
+A tool that converts Elasticsearch query DSL into standard SQL statements. Available in both **Python** and **Java**.
 
 ## Project Structure
 
 ```
 es_convert/
-├── main.py                  # Entry point, reads config and runs conversion
-├── config.ini               # Configuration file (input path, output dir)
-├── query.json               # Example ES query input
-├── converter/
-│   ├── __init__.py          # Exports parse_es_query and build_sql
-│   ├── parser.py            # Parses ES query DSL into intermediate representation
-│   └── sql_builder.py       # Builds SQL string from intermediate representation
-├── test/
-│   ├── __init__.py
-│   └── test_converter.py    # Unit tests (7 cases covering all query types)
-└── result/
-    └── result.txt           # Generated SQL output
+├── README.md                            # Bilingual documentation
+├── LICENSE
+├── query.json                           # Shared sample ES query input
+│
+├── python/                              # Python version
+│   ├── main.py                          # Entry point, reads config.ini
+│   ├── config.ini                       # Configuration (input path, output dir)
+│   ├── converter/
+│   │   ├── __init__.py                  # Exports parse_es_query, build_sql
+│   │   ├── parser.py                    # Parses ES query DSL → intermediate dict
+│   │   └── sql_builder.py              # Builds SQL string from intermediate dict
+│   ├── test/
+│   │   ├── __init__.py
+│   │   └── test_converter.py            # 7 unit tests covering all query types
+│   └── result/
+│       └── result.txt                   # Generated SQL output
+│
+└── java/                                # Java version
+    ├── pom.xml                          # Maven build (Java 8+, org.json, JUnit 5)
+    ├── config.properties                # Configuration (input path, output dir)
+    ├── src/main/java/esconvert/
+    │   ├── Main.java                    # Entry point, reads config.properties
+    │   ├── EsParser.java                # Parses ES query DSL → JSONObject
+    │   └── SqlBuilder.java              # Builds SQL string from JSONObject
+    ├── src/test/java/esconvert/
+    │   └── ConverterTest.java           # 7 JUnit 5 tests (mirrors Python tests)
+    └── result/
+        └── result.txt                   # Generated SQL output
 ```
 
 ## Configuration
 
-Edit `config.ini` to set the input query file and output directory:
+### Python (`python/config.ini`)
 
 ```ini
 [input]
-# Path to the Elasticsearch query JSON file
-query_file = query.json
+query_file = ../query.json
 
 [output]
-# Directory to store the result
 result_dir = ./result
+```
+
+### Java (`java/config.properties`)
+
+```properties
+query_file=../query.json
+result_dir=./result
 ```
 
 ## Usage
 
-1. Write your ES query in a file (e.g., `query.json`). The file can optionally start with a `GET /index/_search` line:
+### Python
+
+```bash
+cd python
+python main.py
+```
+
+Run tests:
+
+```bash
+cd python
+python -m unittest test.test_converter -v
+```
+
+### Java
+
+Build and run with Maven:
+
+```bash
+cd java
+mvn package -q
+java -jar target/es-query-to-sql-1.0.0.jar
+```
+
+Or compile manually:
+
+```bash
+cd java
+mkdir -p target/classes
+javac -cp lib/json-20240303.jar -d target/classes src/main/java/esconvert/*.java
+java -cp target/classes:lib/json-20240303.jar esconvert.Main
+```
+
+Run tests:
+
+```bash
+cd java
+mvn test
+```
+
+### Sample Input (`query.json`)
 
 ```
 GET /my_index/_search
@@ -58,19 +119,7 @@ GET /my_index/_search
 }
 ```
 
-2. Run the converter:
-
-```bash
-python main.py
-```
-
-3. The SQL result is printed to the screen and saved to `result/result.txt`.
-
-4. Run tests:
-
-```bash
-python -m unittest test.test_converter -v
-```
+The SQL result is printed to the screen and saved to `result/result.txt`.
 
 ## Supported ES Query Keywords
 
@@ -100,50 +149,114 @@ python -m unittest test.test_converter -v
 
 ## Requirements
 
-- Python 3.10+ (no external dependencies)
+| Version | Requirement |
+|---|---|
+| Python | 3.6+ (no external dependencies) |
+| Java | JDK 8+, Maven 3.6+ (dependency: `org.json:json`) |
 
 </details>
 
 <details>
 <summary><b>中文</b></summary>
 
-一个将 Elasticsearch 查询 DSL 转换为标准 SQL 语句的 Python 工具。
+一个将 Elasticsearch 查询 DSL 转换为标准 SQL 语句的工具，提供 **Python** 和 **Java** 两个版本。
 
 ## 项目结构
 
 ```
 es_convert/
-├── main.py                  # 程序入口，读取配置并执行转换
-├── config.ini               # 配置文件（输入路径、输出目录）
-├── query.json               # 示例 ES 查询输入
-├── converter/
-│   ├── __init__.py          # 导出 parse_es_query 和 build_sql
-│   ├── parser.py            # 将 ES 查询 DSL 解析为中间表示
-│   └── sql_builder.py       # 根据中间表示生成 SQL 字符串
-├── test/
-│   ├── __init__.py
-│   └── test_converter.py    # 单元测试（7 个用例，覆盖所有查询类型）
-└── result/
-    └── result.txt           # 生成的 SQL 输出
+├── README.md                            # 中英文双语文档
+├── LICENSE
+├── query.json                           # 共享的示例 ES 查询输入
+│
+├── python/                              # Python 版本
+│   ├── main.py                          # 程序入口，读取 config.ini
+│   ├── config.ini                       # 配置文件（输入路径、输出目录）
+│   ├── converter/
+│   │   ├── __init__.py                  # 导出 parse_es_query、build_sql
+│   │   ├── parser.py                    # 将 ES 查询 DSL 解析为中间字典
+│   │   └── sql_builder.py              # 根据中间字典生成 SQL 字符串
+│   ├── test/
+│   │   ├── __init__.py
+│   │   └── test_converter.py            # 7 个单元测试，覆盖所有查询类型
+│   └── result/
+│       └── result.txt                   # 生成的 SQL 输出
+│
+└── java/                                # Java 版本
+    ├── pom.xml                          # Maven 构建（Java 8+、org.json、JUnit 5）
+    ├── config.properties                # 配置文件（输入路径、输出目录）
+    ├── src/main/java/esconvert/
+    │   ├── Main.java                    # 程序入口，读取 config.properties
+    │   ├── EsParser.java                # 将 ES 查询 DSL 解析为 JSONObject
+    │   └── SqlBuilder.java              # 根据 JSONObject 生成 SQL 字符串
+    ├── src/test/java/esconvert/
+    │   └── ConverterTest.java           # 7 个 JUnit 5 测试（与 Python 测试一一对应）
+    └── result/
+        └── result.txt                   # 生成的 SQL 输出
 ```
 
 ## 配置说明
 
-编辑 `config.ini` 来设置输入查询文件和输出目录：
+### Python (`python/config.ini`)
 
 ```ini
 [input]
-# Elasticsearch 查询 JSON 文件路径
-query_file = query.json
+query_file = ../query.json
 
 [output]
-# 结果存储目录
 result_dir = ./result
+```
+
+### Java (`java/config.properties`)
+
+```properties
+query_file=../query.json
+result_dir=./result
 ```
 
 ## 使用方法
 
-1. 将 ES 查询写入文件（如 `query.json`）。文件可以包含 `GET /index/_search` 开头行：
+### Python
+
+```bash
+cd python
+python main.py
+```
+
+运行测试：
+
+```bash
+cd python
+python -m unittest test.test_converter -v
+```
+
+### Java
+
+使用 Maven 构建并运行：
+
+```bash
+cd java
+mvn package -q
+java -jar target/es-query-to-sql-1.0.0.jar
+```
+
+或手动编译：
+
+```bash
+cd java
+mkdir -p target/classes
+javac -cp lib/json-20240303.jar -d target/classes src/main/java/esconvert/*.java
+java -cp target/classes:lib/json-20240303.jar esconvert.Main
+```
+
+运行测试：
+
+```bash
+cd java
+mvn test
+```
+
+### 输入示例 (`query.json`)
 
 ```
 GET /my_index/_search
@@ -162,19 +275,7 @@ GET /my_index/_search
 }
 ```
 
-2. 运行转换器：
-
-```bash
-python main.py
-```
-
-3. SQL 结果会输出到屏幕，同时保存到 `result/result.txt`。
-
-4. 运行测试：
-
-```bash
-python -m unittest test.test_converter -v
-```
+SQL 结果会输出到屏幕，同时保存到 `result/result.txt`。
 
 ## 支持的 ES 查询关键词
 
@@ -204,6 +305,9 @@ python -m unittest test.test_converter -v
 
 ## 环境要求
 
-- Python 3.10+（无需外部依赖）
+| 版本 | 要求 |
+|---|---|
+| Python | 3.6+（无需外部依赖） |
+| Java | JDK 8+，Maven 3.6+（依赖：`org.json:json`） |
 
 </details>
